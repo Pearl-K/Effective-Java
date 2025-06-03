@@ -11,21 +11,25 @@
 ### 2. 호출될 때마다 인스턴스를 새로 생성하지 않아도 된다.
 - 불변 클래스에서, 인스턴스를 미리 만들어 놓거나 새로 생성한 인스턴스를 캐싱하여 재활용하는 식으로 불필요한 객체 생성을 피할 수 있다.
 - 대표적인 예시로 `Boolean.valueOf(boolean b)` 메서드가 있다.
-    ```java
-        public final class Boolean implements java.io.Serializable, Comparable<Boolean> {
-            
-            // 1. Boolean 패키지 내부에 static으로 선언
-            public static final Boolean TRUE = new Boolean(true);
-            public static final Boolean FALSE = new Boolean(false);
 
-            // ...
-            // 2. Boolean.valueOf() 를 사용하면, 프로그램 시작 시 이미 생성되어
-            //    static 영역에 올라가있는 단 하나의 Boolean 객체 인스턴스를 참조한다.
-            public static Boolean valueOf(boolean b){
-                return b ? TRUE : FALSE;
-            }
+
+    ```java
+
+    public final class Boolean implements java.io.Serializable, Comparable<Boolean> {
+            
+        // 1. Boolean 패키지 내부에 static으로 선언
+        public static final Boolean TRUE = new Boolean(true);
+        public static final Boolean FALSE = new Boolean(false);
+
+        // 2. Boolean.valueOf() 를 사용하면, 프로그램 시작 시 이미 생성되어
+        //    static 영역에 올라가있는 단 하나의 Boolean 객체 인스턴스를 참조한다.
+        public static Boolean valueOf(boolean b){
+            return b ? TRUE : FALSE;
         }
+    }
+
     ```
+
 
 - 비슷한 기법으로 [Flyweight 패턴이 있다. (아래에 설명)](#flyweight-패턴이란)
 
@@ -43,11 +47,13 @@
 
 
     ```java
-        public final class Singleton {
-            private static final Singleton INSTANCE = new Singleton();
-            private Singleton() {} // private으로 생성자 감추고, 정적 팩토리 메서드로만 접근
-            public static Singleton getInstance() { return INSTANCE; }
-        }
+
+    public final class Singleton {
+        private static final Singleton INSTANCE = new Singleton();
+        private Singleton() {} // private으로 생성자 감추고, 정적 팩토리 메서드로만 접근
+        public static Singleton getInstance() { return INSTANCE; }
+    }
+
     ```
 
 
@@ -56,16 +62,16 @@
 
     ```java
 
-        Integer a1 = new Integer(100);
-        Integer b1 = new Integer(100);
-        System.out.println(a.equals(b)); // true (값이 같음)
-        System.out.println(a == b);      // false (다른 객체)
+    Integer a1 = new Integer(100);
+    Integer b1 = new Integer(100);
+    System.out.println(a.equals(b)); // true (값이 같음)
+    System.out.println(a == b);      // false (다른 객체)
 
-        // 동치 객체를 valueOf()를 통해 하나의 인스턴스를 반환하도록 통제
-        Integer a2 = Integer.valueOf(100);
-        Integer b2 = Integer.valueOf(100);
-        System.out.println(a.equals(b)); // true
-        System.out.println(a == b);      // true
+    // 동치 객체를 valueOf()를 통해 하나의 인스턴스를 반환하도록 통제
+    Integer a2 = Integer.valueOf(100);
+    Integer b2 = Integer.valueOf(100);
+    System.out.println(a.equals(b)); // true
+    System.out.println(a == b);      // true
 
     ```
 
@@ -82,13 +88,12 @@
 
 
 ```java
-    // 반환 타입은 List 인터페이스
-    // 실제 반환되는 객체는 Collections$UnmodifiableRandomAccessList 내부 클래스의 인스턴스
-    // -> 원본 리스트를 수정 못하게 Read-Only로 Wrapper를 씌운다.
+/* 반환 타입은 List 인터페이스
+    실제 반환되는 객체는 Collections$UnmodifiableRandomAccessList 내부 클래스의 인스턴스
+    원본 리스트를 수정 못하게 Read-Only로 Wrapper를 씌우는 기능
 
-    // 클라이언트는 List 인터페이스만 알고 사용하면 된다.
-    // 당연히 내부 구현도 숨길 수 있다.
-    List<String> list = Collections.unmodifiableList(Arrays.asList("a", "b"));
+    클라이언트는 List 인터페이스만 알고 사용하면 된다. 당연히 내부 구현도 숨길 수 있다. */
+List<String> list = Collections.unmodifiableList(Arrays.asList("a", "b"));
 ```
 
 
@@ -97,19 +102,19 @@
 
 
 ```java
-    // 반환 타입은 NumberFormat 추상 클래스
-    // 내부적으로는 DecimalFormat 같은 하위 클래스의 인스턴스 반환
-    NumberFormat nf = NumberFormat.getInstance();
+/* 반환 타입은 NumberFormat 추상 클래스
+    내부적으로는 DecimalFormat 같은 하위 클래스의 인스턴스 반환 */
+NumberFormat nf = NumberFormat.getInstance();
 ```
 
 
 ```java
-    // 반환 타입은 EnumSet<Day> 추상 클래스
-    // -> 여기서 Day는 사용자가 정의한 enum 타입
+/* 반환 타입은 EnumSet<Day> 추상 클래스
+    -> 여기서 Day는 사용자가 정의한 enum 타입
 
-    // 내부적으로는 RegularEnumSet이나 JumboEnumSet 같은 구체 클래스의 인스턴스를 반환한다.
-    // enum 크기에 따라 최적화된 구현체 사용 가능하다.
-    EnumSet<Day> days = EnumSet.of(Day.MONDAY, Day.WEDNESDAY);
+    내부적으로는 RegularEnumSet이나 JumboEnumSet 같은 구체 클래스의 인스턴스를 반환한다.
+    enum 크기에 따라 최적화된 구현체 사용 가능하다. */
+EnumSet<Day> days = EnumSet.of(Day.MONDAY, Day.WEDNESDAY);
 
 ```
 - 위에 EnumSet은 아래 4번 장점에서도 볼 수 있다.
@@ -123,32 +128,32 @@
 
 ```java
 
-    enum Day { MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY }
+enum Day { MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY }
 
-    public class Main {
-        public static void main(String[] args) {
-            EnumSet<Day> workdays = EnumSet.of(Day.MONDAY, Day.TUESDAY, Day.WEDNESDAY);
-            System.out.println(workdays); // [MONDAY, TUESDAY, WEDNESDAY]
-        }
+public class Main {
+    public static void main(String[] args) {
+        EnumSet<Day> workdays = EnumSet.of(Day.MONDAY, Day.TUESDAY, Day.WEDNESDAY);
+        System.out.println(workdays); // [MONDAY, TUESDAY, WEDNESDAY]
     }
+}
 
-    // → 내부적으로 noneOf()로 빈 EnumSet 생성 후, 남은 element를 add()
-    public static <E extends Enum<E>> EnumSet<E> of(E e1, E e2, E... rest) {
-        EnumSet<E> result = EnumSet.noneOf(e1.getDeclaringClass());
-        result.add(e1);
-        result.add(e2);
-        for (E e : rest)
-            result.add(e);
-        return result;
-    }
+// → 내부적으로 noneOf()로 빈 EnumSet 생성 후, 남은 element를 add()
+public static <E extends Enum<E>> EnumSet<E> of(E e1, E e2, E... rest) {
+    EnumSet<E> result = EnumSet.noneOf(e1.getDeclaringClass());
+    result.add(e1);
+    result.add(e2);
+    for (E e : rest)
+        result.add(e);
+    return result;
+}
 
-    public static <E extends Enum<E>> EnumSet<E> noneOf(Class<E> elementType) {
-        Enum[] universe = elementType.getEnumConstants();
-        if (universe.length <= 64)
-            return new RegularEnumSet<>(elementType); // 비트 마스크 1개 (long)
-        else
-            return new JumboEnumSet<>(elementType);   // 비트 마스크 배열 (long[])
-    }
+public static <E extends Enum<E>> EnumSet<E> noneOf(Class<E> elementType) {
+    Enum[] universe = elementType.getEnumConstants();
+    if (universe.length <= 64)
+        return new RegularEnumSet<>(elementType); // 비트 마스크 1개 (long)
+    else
+        return new JumboEnumSet<>(elementType);   // 비트 마스크 배열 (long[])
+}
 
 ```
 
@@ -160,9 +165,8 @@
 
 ### 5. 정적 팩토리 메서드를 작성하는 시점에 반환할 객체의 클래스가 존재하지 않아도 된다.
 - 이는 서비스 제공자 프레임워크를 만드는 예시로 설명된다.
-- 서비스 제공자 프레임워크 =
+- 서비스 제공자 프레임워크
     > 클라이언트 코드가 특정 구현 클래스를 직접 알지 않아도,
-    >
     > 인터페이스(또는 추상 클래스)와 정적 팩토리 메서드를 통해 구현체를 선택하고 사용하게 해주는 구조를 말한다.
 
 
@@ -213,6 +217,8 @@
 | `type`     | `getType` 이나 `newType` 의 간결한 버전  |
 
 
+---
+
 
 ## Flyweight 패턴이란?
 - Flyweight 패턴은 동일한 객체를 공유해서 메모리 사용을 최소화하는 구조 패턴
@@ -234,23 +240,19 @@
 
 
 ```java
-    public UseCouponResponseDto useCoupon(Long userId, Long price) {
-        validateOriginalPrice(price);
+public UseCouponResponseDto useCoupon(Long userId, Long price) {
+    validateOriginalPrice(price);
 
-        synchronized (lockKey(userId)) {
-            List<Coupon> coupons = getUserCouponsOrThrow(userId);
-            Coupon bestCoupon = selectBestCouponOrThrow(coupons, price);
-            long discountAmount = bestCoupon.getType().calculateDiscount(price);
-            couponRepository.delete(bestCoupon);
-            return UseCouponResponseDto.of(price, discountAmount, bestCoupon.getType());
-        }
+    synchronized (lockKey(userId)) {
+        // ... 세부 구현
     }
+}
 
-    // intern으로 고유한 String 객체에만 접근해서 락을 건다
-    // 고유 userId에 대해서 락을 잡으면 해당 유저가 동시에 여러번 시도해도,
-    // 모니터락을 잡은 하나의 요청만 처리된다.
-    private String lockKey(Long userId) {
-        return userId.toString().intern();
-    }
+// intern으로 고유한 String 객체에만 접근해서 락을 건다
+//  -> 고유 userId에 대해서 락을 잡으면 해당 유저가 동시에 여러번 시도해도,
+//  -> 모니터락을 잡은 하나의 요청만 처리된다.
+private String lockKey(Long userId) {
+    return userId.toString().intern();
+}
 
 ```

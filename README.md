@@ -16,11 +16,11 @@
 
 ## 🗂️ Contents
 ### Chapter 02. 객체 생성과 파괴
-- [Item 01. 생성자 대신 정적 팩토리 메서드를 고려하라]()
-- [Item 02. 생성자에 매개변수가 많다면 빌더를 고려하라]()
-- [Item 03. private 생성자나 enum 타입으로 싱글턴임을 보증하라]()
-- [Item 04. 인스턴스화를 막으려거든 private 생성자를 사용하라]()
-- [Item 05. 자원을 직접 명시하지 말고 의존 객체 주입을 사용하라]()
+- [Item 01. 생성자 대신 정적 팩토리 메서드를 고려하라](/chapter02/Item-01.md)
+- [Item 02. 생성자에 매개변수가 많다면 빌더를 고려하라](/chapter02/Item-02.md)
+- [Item 03. private 생성자나 enum 타입으로 싱글턴임을 보증하라](/chapter02/Item-03.md)
+- [Item 04. 인스턴스화를 막으려거든 private 생성자를 사용하라](/chapter02/Item-04.md)
+- [Item 05. 자원을 직접 명시하지 말고 의존 객체 주입을 사용하라](/chapter02/Item-05.md)
 
 
 ## 📌 Update History

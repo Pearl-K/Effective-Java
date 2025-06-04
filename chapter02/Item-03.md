@@ -25,6 +25,7 @@ public class Elvis {
 
 
 ### 2. 정적 팩토리 방식의 싱글턴
+- 항상 같은 싱글턴 객체를 반환하도록 정적 팩토리 방식으로 구현할 수 있다.
 
 
 ```java
@@ -38,6 +39,21 @@ public class Singleton {
     }
 }
 ```
+
+
+- 정적 팩토리 방식으로 싱글톤을 구현하면 다음과 같은 이점이 있다.
+    - 1) 유연한 확장 가능성: 지금은 싱글턴 객체를 반환하지만, 나중에는 새로 생성하는 식으로 변경 가능
+    - 2) 제네릭 싱글턴 팩토리로 만들 수 있다: 정적 팩토리 메서드를 제네릭으로 선언하면, 타입 안정성과 재사용성까지 확보할 수 있다.
+        - [제네릭 싱글턴 팩토리는 추후 Item 30에서 확인 가능](https://dahye-jeong.gitbook.io/java/java/effective_java/2021-05-29-make-generic-method#undefined)
+    - 3) 함수형 인터페이스에 메서드 참조로 넘길 수 있다.
+        - 정적 팩토리 메서드는 Supplier<T> 같은 함수형 인터페이스에 메서드 참조(::)로 전달이 가능하다.
+        - 함수형 프로그래밍, 스트림, 전략 패턴 구현 시 매우 유용하다.
+
+
+            ```java
+                Supplier<MyService> serviceSupplier = MyService::getInstance;
+            ```
+
 
 
 ### 3. `Enum` 타입으로 싱글턴 구현

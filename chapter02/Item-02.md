@@ -290,7 +290,7 @@ public class NyPizza extends Pizza {
 
 | 기준                                                    | 설명                                            |
 | ----------------------------------------------------- | --------------------------------------------- |
-| **간단한 DTO / Request 객체**                              | 주로 컨트롤러 입력 값이나 중간 전달 객체를 구성할 때                |
+| **간단한 DTO / Request 객체**                | 주로 컨트롤러 입력 값이나 중간 전달 객체를 구성할 때                |
 | **필드 수가 많지만 유효성은 Spring Validation 만으로 해결할 때** | ex. `@NotNull`, `@Min`, `@Size` 등으로 유효성 검사 위임 |
 | **명시적 생성 로직이 필요 없는 경우**             | 생성자가 단순히 필드 할당만 한다면 `@Builder`가 충분            |
 | **테스트 코드 / 임시 객체 생성**                 | 빠르게 임시 객체를 만들고 싶은 경우                          |
@@ -361,3 +361,43 @@ public NutritionFacts build() {
 
 - 이전 기업 연계 프로젝트에서, 영양소 관련 Entity의 유효성 검사를 많이 진행해야 했다.
 - 이를 Dto 수준의 Spring Validation으로 처리했는데, 도메인에서 수동 빌더 패턴을 통해 제대로 검사하는 방향으로 고칠 수 있을 것 같다.
+
+
+## 추가: Lombok `@Builder` 패턴과 JPA 리플렉션 충돌
+- JPA의 동작 방식(리플렉션 기반 인스턴스화)과 Lombok `@Builder`가 생성자 자동 생성에 관여한다는 점에서 서로 안맞는다는 인식을 줄 수 있다.
+
+### ✅ JPA의 생성자 요구 사항
+- JPA는 객체를 생성할 때 리플렉션 기반으로 `newInstance()` 호출을 하며, 이 과정에서 기본 생성자(no-arg constructor) 가 꼭 필요하다.
+- 또한, 기본 생성자는 public 또는 protected 이어야 한다.
+
+```java
+@Entity
+public class Member {
+    
+    @Id @GeneratedValue
+    private Long id;
+
+    private String name;
+
+    protected Member() {} // JPA를 위한 기본 생성자
+}
+```
+
+
+### ✅ Lombok @Builder는 어떤 생성자를 만드는가?
+```java
+@Builder
+public class Member {
+    private String name;
+}
+
+// @Builder를 사용하면 다음과 같은 private 생성자를 만든다.
+private Member(String name) {
+    this.name = name;
+}
+```
+
+
+- 기본 생성자(매개변수 없는 생성자)를 만들지 않는다.
+- 따라서 JPA + `@Builder`를 함께 사용하기 위해서 `@NoArgsConstructor(access = AccessLevel.PROTECTED)` 을 명시적으로 추가해야 한다.
+

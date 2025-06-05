@@ -34,9 +34,28 @@ public class Collections {
 ```
 
 
-## 추가: Java Spring 에서 Util 클래스와 `@Component`
-- 스프링에서 대부분의 유틸 클래스는 `@Component` 빈 등록을 통한 싱글턴 스코프 관리, DI로 충분하다고 생각하고 개발해왔다.
-- 그러나 `private` 생성자 막기를 통해 인스턴스화와 상속을 원천적으로 막을 필요가 있는지 재고해볼만한 포인트가 있다.
-- 상속해서 쓰면 안되는 보안/정책 유틸 클래스의 경우,
-    - 누군가가 상속해서 확장이나 오용을 시도할 수 있다.
-    - 여태까지는 작은 프로젝트 규모에서 규칙을 정해놓고 신뢰할 수 있는 개발자들과 개발하는 상황이었지만, 대규모 협업으로 갈 수록 코드를 쉽게 상속하거나 확장하게 되는 위험이 커진다. 이것을 클래스 자체 스펙으로 막아놓아 보안 의도를 전달할 수 있다.
+## 추가: Java Spring 에서 Util 클래스
+- 스프링에서 유틸 클래스는 정적 메서드로만 구성되어 인스턴스화를 막는 유틸 클래스와, `@Component` 빈 등록을 통해 싱글턴으로 관리 되는 유틸 클래스가 있다.
+- 내부가 정적 메서드로만 구성될 수 있으면 전자를, 다른 빈을 주입 받아서 만들어야 하거나 테스트 Mock 대체가 필요할 때는 후자를 택한다.
+- 특히, 인스턴스화를 막아야하는 Util 클래스 중, 보안적 의도를 명시하고 싶을 때 `private` 생성자 막기를 작성하는게 좋다.
+
+
+```java
+public final class SecurityPolicyUtils {
+    private SecurityPolicyUtils() {
+        throw new AssertionError("Cannot be instantiated");
+    }
+
+    public static boolean isIpBlocked(String ip) {
+        // 보안 정책 적용
+        return ip.startsWith("10.");
+    }
+}
+```
+
+
+이렇게 만들면:
+- final로 상속 금지 정책
+- private 생성자 + Exception으로 내부 호출도 차단
+- 보안 정책을 가진 클래스를 누군가가 상속해서 오버라이드하거나, 인스턴스화해서 다른 동작 유도를 막는다
+

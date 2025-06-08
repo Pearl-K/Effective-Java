@@ -21,6 +21,11 @@
 - [Item 03. private 생성자나 enum 타입으로 싱글턴임을 보증하라](/chapter02/Item-03.md)
 - [Item 04. 인스턴스화를 막으려거든 private 생성자를 사용하라](/chapter02/Item-04.md)
 - [Item 05. 자원을 직접 명시하지 말고 의존 객체 주입을 사용하라](/chapter02/Item-05.md)
+- [Item 06. 불필요한 객체 생성을 피하라](/chapter02/Item-06.md)
+- [Item 07. 다 쓴 객체 참조를 해제하라](/chapter02/Item-07.md)
+- [Item 08. finalizer와 cleaner 사용을 피하라](/chapter02/Item-08.md)
+- [Item 09. try-finally 보다는 try-with-resources 를 사용하라](/chapter02/Item-09.md)
+
 
 
 ## 📌 Update History

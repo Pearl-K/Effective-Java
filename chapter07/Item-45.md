@@ -23,6 +23,75 @@ List<Person> teenagers = people.stream()                     // 소스 스트림
 ```
 
 
+## (+추가) 스트림 파이프라인에서 연산의 순서 중요성
+### 1. 시맨틱(Semantics) 관점
+
+1. **타입 변화**
+    * `.map()` 이후엔 요소 타입이 바뀌기 때문에, 그 뒤로는 원본 타입 메서드를 쓸 수 없다.
+    * 예시
+   
+      ```java
+      // ❌ 잘못된 순서: map으로 String으로 바꾼 뒤에 getAge() 호출 불가
+      people.stream()
+            .map(Person::getName)
+            .filter(p -> p.getAge() > 20) // 컴파일 에러
+            .collect(Collectors.toList());
+      ```
+    * **올바른 순서**로 `filter` → `map` 을 해야 한다.
+
+2. **단축(short-circuit) 연산 효과**
+    * `findFirst()`, `anyMatch()`, `limit()` 같은 최종 연산은
+      앞선 **필터(filter)** 단계가 먼저 작동해야 가능한 한 빨리 종료할 수 있다. (효율적)
+    * 예시:
+
+      ```java
+      // filter가 마지막에 오면, 모든 요소에 map이 먼저 실행된 뒤에야 종료 검사
+      people.stream()
+            .map(Person::getName)         // 먼저 실행
+            .map(String::length)
+            .anyMatch(len -> len > 10)    // 불필요한 연산이 많아짐
+      ```
+    * 필터를 최대한 앞에 두면, 검사 대상 요소 수를 줄여 성능 향상
+
+
+---
+### 2. **성능(Performance) 관점**
+1. **무상태 vs 상태(stateful) 연산**
+    * `filter`, `map`, `flatMap` 등은 **무상태(stateless)** → 각 요소만 보고 처리
+    * `sorted`, `distinct`, `limit` 등은 **상태(stateful)** → 요소 전체 또는 부분을 메모리에 담음
+    * **권장 순서**
+
+      ```text
+      (1) filter → (2) map/flatMap → (3) 중간 상태ful(정렬·중복제거) → (4) 최종 연산
+      ```
+    * 이렇게 하면 stateful 연산이 다룰 요소 수를 최소화할 수 있다.
+
+
+2. **병렬 스트림에서의 순서 보장**
+
+    * `.parallelStream()` 사용 시, 순서를 보장해야 하는 연산(예: `forEachOrdered`, `limit`)은
+      오히려 병렬 효율을 낮춘다.
+    * 순서가 필요 없으면 `forEach`와 `unordered()`를 써서 병렬 성능을 더 뽑아낼 수 있다.
+
+
+---
+### 3. **정리 & 권장 패턴**
+
+| 단계 구분                 | 예시 메서드                                      | 권장 위치            |
+| --------------------- | ------------------------------------------- | ---------------- |
+| 무상태 필터/매핑(stateless)  | `filter`, `map`, `flatMap`                  | **맨 앞**          |
+| 상태ful 중간 연산(stateful) | `sorted`, `distinct`, `limit`, `skip`       | 필터·매핑 후, 최종 연산 전 |
+| 최종 연산(terminal)       | `collect`, `forEach`, `reduce`, `findFirst` | 스트림 끝            |
+
+* **필터(filter)**: 가장 먼저
+* **매핑(map)**: 두 번째
+* **상태ful 연산**: 데이터 양이 줄어든 뒤
+* **최종 연산**: 맨 마지막
+
+이 순서를 지키면 의도한 대로 동작할 뿐 아니라 성능도 최적화할 수 있으므로 잘 지켜서 코드를 구현하자.
+
+
+
 ## 코드 블럭 vs 람다 블럭
 | 특징                         | 코드 블록                                    | 람다 블록                                                   |
 |----------------------------|-------------------------------------------|-----------------------------------------------------------|

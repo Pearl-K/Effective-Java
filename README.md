@@ -70,6 +70,17 @@
 - [Item 43. 람다보다는 메서드 참조를 사용하라](/chapter07/Item-43.md)
 - [Item 44. 표준 함수형 인터페이스를 사용하라](/chapter07/Item-44.md)
 - [Item 45. 스트림은 주의해서 사용하라](/chapter07/Item-45.md)
+- [Item 46. 스트림에서는 부작용 없는 함수를 사용하라](/chapter07/Item-46.md)
+- [Item 47. 반환 타입으로는 스트림보다 컬렉션이 낫다](/chapter07/Item-47.md)
+- [Item 48. 스트림 병렬화는 주의해서 적용하라](/chapter07/Item-48.md)
+
+
+---
+### Chapter 08. 메서드
+- [Item 49. 매개변수가 유효한지 검사하라](/chapter08/Item-49.md)
+- [Item 50. 적시에 방어적 복사본을 만들라](/chapter08/Item-50.md)
+- [Item 51. 메서드 시그니처를 신중히 설계하라](/chapter08/Item-51.md)
+- [Item 52. 다중정의는 신중히 사용하라](/chapter08/Item-52.md)
 
 
 ---
@@ -79,3 +90,4 @@
 - 3주차: Item 15-25 (25.06.17)
 - 4주차: Item 26-30 (25.06.24)
 - 5주차: Item 31-33 & 42-45 (25.07.01)
+- 6주차: Item 46-52 (25.07.08)

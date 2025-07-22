@@ -14,6 +14,33 @@
 - 외계인 메서드는 예측할 수 없어서 예외를 일으키거나, 교착 상태에 빠지거나, 데이터를 훼손할 수도 있다.
 
 
+
+### 잘못된 예: 외계인 메서드를 동기화 블록 내부에서 호출
+
+
+```java
+public class ObservableSet<E> extends HashSet<E> {
+    private final List<SetObserver<E>> observers = new ArrayList<>();
+
+    public synchronized void addObserver(SetObserver<E> observer) {
+        observers.add(observer);
+    }
+
+    public synchronized boolean add(E element) {
+        boolean added = super.add(element);
+        if (added) {
+            for (SetObserver<E> observer : observers)
+                observer.added(this, element);  // ⚠ 외계인 메서드 호출!
+        }
+        return added;
+    }
+}
+```
+
+- 위 코드는 `added()`라는 외부에서 전달받은 콜백을 동기화 블록 안에서 호출하고 있다.
+- 해당 콜백 내부에서 `removeObserver()` 같은 메서드를 호출하면 교착 상태에 빠질 수 있다.
+
+
 ## 외계인 메서드 호출했을 때 생기는 문제 해결
 - 대부분의 문제는 외계인 메서드 호출을 동기화 블록 바깥으로 옮기면 해결된다.
 - 그러나 꼭 동기화를 해서 문제를 해결해야 하는지 고민해보면 좋다.
